@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:guardianwallet/tokenmanager.dart';
 import 'package:http/http.dart' as http;
 
+import 'dependentmenu.dart';
+
 class LoginScreen extends StatelessWidget {
   static const routeName = '/login';
 
@@ -34,29 +36,39 @@ class _LoginFormState extends State<LoginForm> {
   Future<void> _login() async {
     final response = await http.post(
       Uri.parse('http://127.0.0.1:8000/api/v1/public/login'),
-      body: {
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
         'email': _emailController.text,
         'password': _passwordController.text,
-      },
+      }),
     );
 
     if (response.statusCode == 200) {
-      // Store bearer token for the session
-      final token = json.decode(response.body)['token'];
+      final data = json.decode(response.body);
+      final token = data['token'];
+      final role = data['role']; // The role is a single string.
       await SecureSessionManager.setToken(token);
-      // Navigate to the next screen or perform other actions
 
-      // Add this to navigate to the GuardianMenuPage after login
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => GuardianMenuPage(),
-      ));
-
+      // Check the user's role and navigate accordingly.
+      if (role == 'guardian') {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => GuardianMenuPage(),
+        ));
+      } else {
+        // Assuming any other role is a dependent for now.
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => DependentMenuPage(),
+        ));
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login Failed')),
       );
     }
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {

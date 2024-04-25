@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart'; // Add intl package for date formatting
+
 
 class RegisterScreen extends StatelessWidget {
   static const routeName = '/register';
@@ -26,6 +28,23 @@ class _RegisterFormState extends State<RegisterForm> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
+
+  DateTime _selectedDate = DateTime.now();
+
+  Future<void> _presentDatePicker() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _dobController.text = DateFormat('yyyy-MM-dd').format(picked); // Update the text of the controller with the formatted date
+      });
+    }
+  }
 
   Future<void> _register() async {
     final response = await http.post(
@@ -106,13 +125,21 @@ class _RegisterFormState extends State<RegisterForm> {
             ),
             TextFormField(
               controller: _dobController,
-              decoration: InputDecoration(labelText: 'Date of Birth (YY-MM-DD)'),
+              decoration: InputDecoration(
+                labelText: 'Date of Birth',
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.calendar_today),
+                  onPressed: _presentDatePicker,
+                ),
+              ),
+              readOnly: true,  // Prevent manual editing
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your date of birth. Format: yy-mm-dd';
+                  return 'Please enter your date of birth';
                 }
-                return null;
+                return null; // Add any additional validation if needed
               },
+              onTap: _presentDatePicker, // Call date picker when tapping the field
             ),
             SizedBox(height: 20),
             ElevatedButton(
