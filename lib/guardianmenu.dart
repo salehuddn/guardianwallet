@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'createdependentpage.dart';
 import 'guardianprofilepage.dart';
+import 'managedependent.dart';
 import 'tokenmanager.dart';
 import 'transactionhistory.dart';
 import 'transferfunddependent.dart';
@@ -99,7 +100,7 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
         Navigator.of(context).push(MaterialPageRoute(builder: (_) => TransactionHistoryPage()));
         break;
       case 3:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => TransferFundDependentPage()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => ManageDependentPage()));
         break;
       case 4:
         Navigator.of(context).push(MaterialPageRoute(builder: (_) => GuardianProfilePage()));
@@ -139,10 +140,14 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
               ));
             }),
             _quickMenuButton(Icons.account_balance_wallet, 'Allocate Fund', () {
-              // TODO: Navigate to allocate fund page
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => TransferFundDependentPage(),
+              ));
             }),
             _quickMenuButton(Icons.history, 'History', () {
-              // TODO: Navigate to history page
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => TransactionHistoryPage(),
+              ));
             }),
           ],
         ),
@@ -196,7 +201,7 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
                 return ListTile(
                   title: Text(transaction['transaction_type']['name']),
                   subtitle: Text('Completed at: ${transaction['completed_at']}'),
-                  trailing: Text('Amount: RM${transaction['amount']}'),
+                  trailing: Text('RM${transaction['amount']}'),
                 );
               }).toList(),
             )
@@ -268,7 +273,9 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          // Action for the button
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => TopUpWalletPage(),
+          ));
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

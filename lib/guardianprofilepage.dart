@@ -11,7 +11,6 @@ class GuardianProfilePage extends StatefulWidget {
 class _GuardianProfilePageState extends State<GuardianProfilePage> {
   bool isLoading = true;
   Map<String, dynamic> profileData = {};
-  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -44,70 +43,56 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
     }
   }
 
-  Future<void> _updateProfile(String key, String value) async {
+  Future<void> _logout() async {
     final token = await SecureSessionManager.getToken();
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/update-profile'),
+      Uri.parse('http://127.0.0.1:8000/api/v1/secured/logout'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
-      body: json.encode({key: value}),
     );
 
     if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Profile updated successfully')),
-      );
-      _fetchProfile();
+      SecureSessionManager.deleteToken();
+      Navigator.pushReplacementNamed(context, '/login');
     } else {
-      // Handle errors
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update profile')),
+        SnackBar(content: Text('Failed to logout')),
       );
     }
   }
 
-  void _showEditDialog(String key, String title, String currentValue) {
-    TextEditingController _controller = TextEditingController(text: currentValue);
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Edit $title'),
-          content: Form(
-            key: _formKey,
-            child: TextFormField(
-              controller: _controller,
-              decoration: InputDecoration(
-                labelText: title,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your $title';
-                }
-                return null;
-              },
-              obscureText: key == 'password', // Obscure text if editing password
-            ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Guardian Profile'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: _logout,
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _updateProfile(key, _controller.text);
-                  Navigator.of(context).pop();
-                }
-              },
-              child: Text('Save'),
-            ),
+        ],
+      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        child: Table(
+          columnWidths: const <int, TableColumnWidth>{
+            0: FlexColumnWidth(),
+            1: FlexColumnWidth(),
+            2: FixedColumnWidth(48.0),
+          },
+          children: [
+            _buildTableRow('Name', profileData['name'] ?? 'N/A', 'name'),
+            _buildTableRow('Email', profileData['email'] ?? 'N/A', 'email'),
+            _buildTableRow('Phone Number', profileData['phone'] ?? 'N/A', 'phone'),
+            _buildTableRow('Date of Birth', profileData['dob']?.substring(0, 10) ?? 'N/A', 'dob'),
+            _buildTableRow('Password', '********', 'password'), // Display obscured password
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -133,30 +118,58 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Guardian Profile'),
-      ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-        child: Table(
-          columnWidths: const <int, TableColumnWidth>{
-            0: FlexColumnWidth(),
-            1: FlexColumnWidth(),
-            2: FixedColumnWidth(48.0),
-          },
-          children: [
-            _buildTableRow('Name', profileData['name'] ?? 'N/A', 'name'),
-            _buildTableRow('Email', profileData['email'] ?? 'N/A', 'email'),
-            _buildTableRow('Phone Number', profileData['phone'] ?? 'N/A', 'phone'),
-            _buildTableRow('Date of Birth', profileData['dob']?.substring(0, 10) ?? 'N/A', 'dob'),
-            _buildTableRow('Password', '********', 'password'), // Display obscured password
+  void _showEditDialog(String key, String title, String currentValue) {
+    TextEditingController _controller = TextEditingController(text: currentValue);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Edit $title'),
+          content: TextFormField(
+            controller: _controller,
+            decoration: InputDecoration(
+              labelText: title,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _updateProfile(key, _controller.text);
+                Navigator.of(context).pop();
+              },
+              child: Text('Save'),
+            ),
           ],
-        ),
-      ),
+        );
+      },
     );
+  }
+
+  Future<void> _updateProfile(String key, String value) async {
+    final token = await SecureSessionManager.getToken();
+    final response = await http.post(
+      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/update-profile'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        key: value}),
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profile updated successfully')),
+      );
+      _fetchProfile();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update profile')),
+      );
+    }
   }
 }

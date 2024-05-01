@@ -46,7 +46,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           return ListTile(
             title: Text(transaction['transaction_type']['name']),
             subtitle: Text('Completed at: ${transaction['completed_at']}'),
-            trailing: Text('Amount: RM${transaction['amount']}'),
+            trailing: Text('RM${transaction['amount']}'),
           );
         },
       ),
