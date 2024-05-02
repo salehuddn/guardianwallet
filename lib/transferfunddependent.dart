@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'guardianreceipt.dart';
 import 'tokenmanager.dart';  // Assuming this handles your token storage
+import 'constants.dart';
 
 class TransferFundDependentPage extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class _TransferFundDependentPageState extends State<TransferFundDependentPage> {
   Future<void> fetchDependents() async {
     final token = await SecureSessionManager.getToken();
     final response = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/dependants'),
+      Uri.parse('$BASE_API_URL/api/v1/secured/guardian/dependants'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -44,7 +45,7 @@ class _TransferFundDependentPageState extends State<TransferFundDependentPage> {
   void _handleTransfer() async {
     final token = await SecureSessionManager.getToken();
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/transfer-fund'),
+      Uri.parse('$BASE_API_URL/secured/guardian/transfer-fund'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

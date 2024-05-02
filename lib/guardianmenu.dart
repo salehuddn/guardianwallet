@@ -9,7 +9,7 @@ import 'tokenmanager.dart';
 import 'transactionhistory.dart';
 import 'transferfunddependent.dart';
 import 'topupwallet.dart';
-
+import 'constants.dart';
 
 class GuardianMenuPage extends StatefulWidget {
 
@@ -29,11 +29,11 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
   void _fetchWalletBalance() async {
     final token = await SecureSessionManager.getToken();
     final walletResponse = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/wallet'),
+      Uri.parse('$BASE_API_URL/secured/guardian/wallet'),
       headers: {'Authorization': 'Bearer $token'},
     );
     final profileResponse = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/profile'),
+      Uri.parse('$BASE_API_URL/secured/guardian/profile'),
       headers: {'Authorization': 'Bearer $token'},
     );
 
@@ -56,7 +56,7 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
   Future<void> _fetchLatestTransactions() async {
     final token = await SecureSessionManager.getToken();
     final response = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/transaction-history'),
+      Uri.parse('$BASE_API_URL/secured/guardian/transaction-history'),
       headers: {'Authorization': 'Bearer $token'},
     );
 

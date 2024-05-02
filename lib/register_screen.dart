@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart'; // Add intl package for date formatting
-
+import 'constants.dart';
 
 class RegisterScreen extends StatelessWidget {
   static const routeName = '/register';
@@ -48,7 +48,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
   Future<void> _register() async {
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/v1/public/register'),
+      Uri.parse('$BASE_API_URL/public/register'),
       body: {
         'name': _nameController.text,
         'email': _emailController.text,

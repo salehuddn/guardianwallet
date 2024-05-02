@@ -9,6 +9,7 @@ import 'tokenmanager.dart';
 import 'transactionhistory.dart';
 import 'transferfunddependent.dart'; // Assuming this should be included if used
 import 'topupwallet.dart'; // Assuming this should be included if used
+import 'constants.dart';
 
 class DependentMenuPage extends StatefulWidget {
   final int currentIndex;
@@ -28,11 +29,11 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
   void _fetchWalletBalance() async {
     final token = await SecureSessionManager.getToken();
     final walletResponse = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/dependant/wallet'),
+      Uri.parse('$BASE_API_URL/secured/dependant/wallet'),
       headers: {'Authorization': 'Bearer $token'},
     );
     final profileResponse = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/dependant/profile'),
+      Uri.parse('$BASE_API_URL/secured/dependant/profile'),
       headers: {'Authorization': 'Bearer $token'},
     );
 
@@ -53,7 +54,7 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
   Future<void> _fetchLatestTransactions() async {
     final token = await SecureSessionManager.getToken();
     final response = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/dependant/transaction-history'),
+      Uri.parse('$BASE_API_URL/secured/dependant/transaction-history'),
       headers: {'Authorization': 'Bearer $token'},
     );
 

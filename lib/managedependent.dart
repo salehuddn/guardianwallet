@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'tokenmanager.dart';
+import 'constants.dart';
 
 class ManageDependentPage extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
   Future<void> _fetchDependents() async {
     final token = await SecureSessionManager.getToken();
     final response = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/dependants'),
+      Uri.parse('$BASE_API_URL/secured/guardian/dependants'),
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {
@@ -75,7 +76,7 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
   Future<void> _updateDependent(String key, String value) async {
     final token = await SecureSessionManager.getToken();
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/update-dependent'),
+      Uri.parse('$BASE_API_URL/secured/guardian/update-dependent'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

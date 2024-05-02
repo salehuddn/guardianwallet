@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'tokenmanager.dart';
+import 'constants.dart';
 
 class GuardianProfilePage extends StatefulWidget {
   @override
@@ -21,7 +22,7 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
   Future<void> _fetchProfile() async {
     final token = await SecureSessionManager.getToken();
     final response = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/profile'),
+      Uri.parse('$BASE_API_URL/secured/guardian/profile'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -46,13 +47,13 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
   Future<void> _logout() async {
     final token = await SecureSessionManager.getToken();
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/logout'),
+      Uri.parse('$BASE_API_URL/secured/logout'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
     );
-
+    print('Response Body: ${response.body}');
     if (response.statusCode == 200) {
       SecureSessionManager.deleteToken();
       Navigator.pushReplacementNamed(context, '/login');
@@ -152,7 +153,7 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
   Future<void> _updateProfile(String key, String value) async {
     final token = await SecureSessionManager.getToken();
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/update-profile'),
+      Uri.parse('$BASE_API_URL/secured/guardian/update-profile'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

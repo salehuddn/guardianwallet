@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'tokenmanager.dart'; // Assumed necessary for token management
+import 'tokenmanager.dart'; // Assumed necessary for token
+import 'constants.dart';
 
 class DependentProfilePage extends StatefulWidget {
   @override
@@ -21,7 +22,7 @@ class _DependentProfilePageState extends State<DependentProfilePage> {
   Future<void> _fetchProfile() async {
     final token = await SecureSessionManager.getToken(); // Fetch the authentication token
     final response = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/dependant/profile'),
+      Uri.parse('$BASE_API_URL/secured/dependant/profile'),
       headers: {
         'Authorization': 'Bearer $token',
       },

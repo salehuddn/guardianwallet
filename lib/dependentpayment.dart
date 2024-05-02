@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dependentreceipt.dart'; // Import the receipt page
+import 'constants.dart';
 
 class DependentPaymentPage extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class _DependentPaymentPageState extends State<DependentPaymentPage> {
 
     // POST request to your endpoint
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/dependant/scan-qr'),
+      Uri.parse('$BASE_API_URL/secured/dependant/scan-qr'),
       body: jsonEncode({'qr_code': qrResult}),
       headers: {'Content-Type': 'application/json'},
     );

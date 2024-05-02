@@ -4,12 +4,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'guardianreceipt.dart';
+import 'constants.dart';
 
 class TopUpWalletPage extends StatefulWidget {
   @override
   _TopUpWalletPageState createState() => _TopUpWalletPageState();
-  static const String successUrl = 'http://127.0.0.1:8000/api/v1/public/success?transaction_id=';
-  static const String cancelUrl = 'http://127.0.0.1:8000/api/v1/public/cancel?transaction_id=';
+  static const String successUrl = '$BASE_API_URL/public/success?transaction_id=';
+  static const String cancelUrl = '$BASE_API_URL/public/cancel?transaction_id=';
 }
 
 class _TopUpWalletPageState extends State<TopUpWalletPage> {
@@ -24,7 +25,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage> {
   Future<void> _startTopUp() async {
     final token = await SecureSessionManager.getToken();
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/topup-wallet'),
+      Uri.parse('$BASE_API_URL/secured/guardian/topup-wallet'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

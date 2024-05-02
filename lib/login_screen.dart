@@ -1,11 +1,12 @@
 import 'dart:convert';
 
-import 'package:guardianwallet/guardianmenu.dart'; // Make sure this import matches the location of your file
+import 'guardianmenu.dart'; // Make sure this import matches the location of your file
 
 
 import 'package:flutter/material.dart';
-import 'package:guardianwallet/tokenmanager.dart';
+import 'tokenmanager.dart';
 import 'package:http/http.dart' as http;
+import 'constants.dart';
 
 import 'dependentmenu.dart';
 
@@ -35,7 +36,7 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<void> _login() async {
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/v1/public/login'),
+      Uri.parse('$BASE_API_URL/public/login'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'email': _emailController.text,
@@ -44,6 +45,7 @@ class _LoginFormState extends State<LoginForm> {
     );
 
     if (response.statusCode == 200) {
+      // print('Response Body: ${response.body}');
       final data = json.decode(response.body);
       final token = data['token'];
       final role = data['role']; // The role is a single string.
@@ -61,6 +63,7 @@ class _LoginFormState extends State<LoginForm> {
         ));
       }
     } else {
+      print('Request failed with status: ${response.statusCode}.');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login Failed')),
       );

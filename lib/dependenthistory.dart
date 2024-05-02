@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'tokenmanager.dart'; // Assuming this manages your token
+import 'constants.dart';
 
 class DependentHistoryPage extends StatefulWidget {
   @override
@@ -25,7 +26,7 @@ class _DependentHistoryPageState extends State<DependentHistoryPage> {
 
     final token = await SecureSessionManager.getToken(); // Get auth token
     final response = await http.get(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/dependant/transaction-history'),
+      Uri.parse('$BASE_API_URL/secured/dependant/transaction-history'),
       headers: {'Authorization': 'Bearer $token'},
     );
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'tokenmanager.dart'; // Assuming you have this file set up for token management.
+import 'constants.dart';
 
 class CreateDependentPage extends StatefulWidget {
   @override
@@ -18,7 +19,7 @@ class _CreateDependentPageState extends State<CreateDependentPage> {
   Future<void> _registerDependent() async {
     final token = await SecureSessionManager.getToken(); // Get the token for the session
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/v1/secured/guardian/create-dependant'),
+      Uri.parse('$BASE_API_URL/secured/guardian/create-dependant'),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -31,8 +32,9 @@ class _CreateDependentPageState extends State<CreateDependentPage> {
         'date_of_birth': _dateOfBirthController.text,
       }),
     );
-
+    print('Response Body: ${response.body}');
     if (response.statusCode == 201) {
+
       // Dependent creation was successful
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Dependent Successfully Created!')),
