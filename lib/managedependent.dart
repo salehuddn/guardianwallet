@@ -5,6 +5,8 @@ import 'tokenmanager.dart';
 import 'constants.dart';
 
 class ManageDependentPage extends StatefulWidget {
+  const ManageDependentPage({super.key});
+
   @override
   _ManageDependentPageState createState() => _ManageDependentPageState();
 }
@@ -37,20 +39,20 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
         isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load dependents')),
+        const SnackBar(content: Text('Failed to load dependents')),
       );
     }
   }
 
   void _showEditDialog(String key, String title, String currentValue) {
-    TextEditingController _controller = TextEditingController(text: currentValue);
+    TextEditingController controller = TextEditingController(text: currentValue);
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text('Edit $title'),
           content: TextFormField(
-            controller: _controller,
+            controller: controller,
             decoration: InputDecoration(
               labelText: 'Enter $title',
             ),
@@ -58,14 +60,14 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                _updateDependent(key, _controller.text);
+                _updateDependent(key, controller.text);
                 Navigator.of(context).pop();
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         );
@@ -92,7 +94,7 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
         selectedDependent[key] = value;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Dependent updated successfully')),
+        const SnackBar(content: Text('Dependent updated successfully')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -105,10 +107,10 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manage Dependents'),
+        title: const Text('Manage Dependents'),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
         child: Column(
           children: [
@@ -125,7 +127,7 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
                   selectedDependent = newValue;
                 });
               },
-              hint: Text('Select a dependent'),
+              hint: const Text('Select a dependent'),
             ),
             selectedDependent != null ? _buildDependentDetails() : Container(),
           ],
@@ -155,17 +157,17 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
     return TableRow(
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         ),
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Text(value),
         ),
         TableCell(
           verticalAlignment: TableCellVerticalAlignment.fill,
           child: isEditable ? IconButton(
-            icon: Icon(Icons.edit),
+            icon: const Icon(Icons.edit),
             onPressed: () => _showEditDialog(key, title, value),
           ) : Container(),
         ),

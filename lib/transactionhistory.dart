@@ -5,6 +5,8 @@ import 'tokenmanager.dart';
 import 'constants.dart';
 
 class TransactionHistoryPage extends StatefulWidget {
+  const TransactionHistoryPage({super.key});
+
   @override
   _TransactionHistoryPageState createState() => _TransactionHistoryPageState();
 }
@@ -38,7 +40,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Transaction History'),
+        title: const Text('Transaction History'),
       ),
       body: ListView.builder(
         itemCount: transactions.length,

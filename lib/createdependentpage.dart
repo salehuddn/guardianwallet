@@ -5,6 +5,8 @@ import 'tokenmanager.dart'; // Assuming you have this file set up for token mana
 import 'constants.dart';
 
 class CreateDependentPage extends StatefulWidget {
+  const CreateDependentPage({super.key});
+
   @override
   _CreateDependentPageState createState() => _CreateDependentPageState();
 }
@@ -37,13 +39,13 @@ class _CreateDependentPageState extends State<CreateDependentPage> {
 
       // Dependent creation was successful
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Dependent Successfully Created!')),
+        const SnackBar(content: Text('Dependent Successfully Created!')),
       );
       // You may want to navigate away or reset the form
     } else {
       // Handle errors
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create dependent')),
+        const SnackBar(content: Text('Failed to create dependent')),
       );
     }
   }
@@ -52,17 +54,17 @@ class _CreateDependentPageState extends State<CreateDependentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Dependent'),
+        title: const Text('Create Dependent'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a name.';
@@ -72,7 +74,7 @@ class _CreateDependentPageState extends State<CreateDependentPage> {
               ),
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an email.';
@@ -82,7 +84,7 @@ class _CreateDependentPageState extends State<CreateDependentPage> {
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -93,7 +95,7 @@ class _CreateDependentPageState extends State<CreateDependentPage> {
               ),
               TextFormField(
                 controller: _dateOfBirthController,
-                decoration: InputDecoration(labelText: 'Date of Birth'),
+                decoration: const InputDecoration(labelText: 'Date of Birth'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the date of birth.';
@@ -107,7 +109,7 @@ class _CreateDependentPageState extends State<CreateDependentPage> {
                     _registerDependent();
                   }
                 },
-                child: Text('Register Dependent'),
+                child: const Text('Register Dependent'),
               ),
             ],
           ),

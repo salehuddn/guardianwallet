@@ -7,6 +7,8 @@ import 'guardianreceipt.dart';
 import 'constants.dart';
 
 class TopUpWalletPage extends StatefulWidget {
+  const TopUpWalletPage({super.key});
+
   @override
   _TopUpWalletPageState createState() => _TopUpWalletPageState();
   static const String successUrl = '$BASE_API_URL/public/success?transaction_id=';
@@ -40,7 +42,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => Scaffold(
-            appBar: AppBar(title: Text('Top Up')),
+            appBar: AppBar(title: const Text('Top Up')),
             body: WebView(
               initialUrl: checkoutUrl,
               javascriptMode: JavascriptMode.unrestricted,
@@ -62,7 +64,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to initiate top-up')),
+        const SnackBar(content: Text('Failed to initiate top-up')),
       );
     }
   }
@@ -83,7 +85,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to retrieve transaction details')),
+        const SnackBar(content: Text('Failed to retrieve transaction details')),
       );
     }
   }
@@ -91,7 +93,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage> {
   void _handlePaymentCancel(String transactionId) {
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Payment cancelled')),
+      const SnackBar(content: Text('Payment cancelled')),
     );
   }
 
@@ -99,23 +101,23 @@ class _TopUpWalletPageState extends State<TopUpWalletPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Top Up Wallet'),
+        title: const Text('Top Up Wallet'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: _amountController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Amount to Top Up',
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _startTopUp,
-              child: Text('Top Up Now'),
+              child: const Text('Top Up Now'),
             ),
           ],
         ),

@@ -1,23 +1,48 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart'; // Add intl package for date formatting
 import 'constants.dart';
+import 'login_screen.dart'; // Ensure the path is correct
 
 class RegisterScreen extends StatelessWidget {
   static const routeName = '/register';
+
+  const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register'),
+        title: const Text('Register', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF1A2833)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
-      body: RegisterForm(),
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/img/background.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: const Center(
+          child: SingleChildScrollView(
+            child: RegisterForm(),
+          ),
+        ),
+      ),
     );
   }
 }
 
 class RegisterForm extends StatefulWidget {
+  const RegisterForm({super.key});
+
   @override
   _RegisterFormState createState() => _RegisterFormState();
 }
@@ -58,43 +83,54 @@ class _RegisterFormState extends State<RegisterForm> {
     );
 
     if (response.statusCode == 201) {
-      showDialog(
+      AwesomeDialog(
         context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Congratulations!'),
-            content: Text('You have been registered.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pushReplacementNamed('/login');
-                },
-                child: Text('Done'),
-              ),
-            ],
-          );
+        dialogType: DialogType.success,
+        headerAnimationLoop: false,
+        title: 'Congratulations!',
+        desc: 'You have been registered.',
+        btnOkOnPress: () {
+          Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
         },
-      );
+        btnOkText: 'Done',
+        btnOkIcon: Icons.check_circle,
+      ).show();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registration Failed')),
-      );
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        headerAnimationLoop: false,
+        title: 'Registration Failed',
+        desc: 'Please try again.',
+        btnOkOnPress: () {},
+        btnOkText: 'OK',
+        btnOkIcon: Icons.cancel,
+      ).show();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(18.0),
       child: Form(
         key: _formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const SizedBox(height: 7),
+            Image.asset('assets/icon/logo_gw.png', height: 150),
+            const SizedBox(height: 48),
             TextFormField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                labelText: 'Name',
+                labelStyle: TextStyle(color: Colors.white),
+                prefixIcon: Icon(Icons.person, color: Colors.white),
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your name';
@@ -102,9 +138,17 @@ class _RegisterFormState extends State<RegisterForm> {
                 return null;
               },
             ),
+            const SizedBox(height: 20),
             TextFormField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                labelText: 'Email',
+                labelStyle: TextStyle(color: Colors.white),
+                prefixIcon: Icon(Icons.email, color: Colors.white),
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your email';
@@ -112,43 +156,65 @@ class _RegisterFormState extends State<RegisterForm> {
                 return null;
               },
             ),
+            const SizedBox(height: 20),
             TextFormField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
+              obscureText: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                labelText: 'Password',
+                labelStyle: TextStyle(color: Colors.white),
+                prefixIcon: Icon(Icons.lock, color: Colors.white),
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your password';
                 }
                 return null;
               },
-              obscureText: true,
             ),
+            const SizedBox(height: 20),
             TextFormField(
               controller: _dobController,
+              readOnly: true,
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
+                enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
                 labelText: 'Date of Birth',
+                labelStyle: const TextStyle(color: Colors.white),
+                prefixIcon: const Icon(Icons.calendar_today, color: Colors.white),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today),
+                  icon: const Icon(Icons.calendar_today, color: Colors.white),
                   onPressed: _presentDatePicker,
                 ),
               ),
-              readOnly: true,  // Prevent manual editing
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your date of birth';
                 }
-                return null; // Add any additional validation if needed
+                return null;
               },
-              onTap: _presentDatePicker, // Call date picker when tapping the field
+              onTap: _presentDatePicker,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState != null && _formKey.currentState!.validate()) {
                   _register();
                 }
               },
-              child: Text('Register'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.black,
+                backgroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 90),
+                textStyle: const TextStyle(fontSize: 18),
+                elevation: 4,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text('Register'),
             ),
           ],
         ),

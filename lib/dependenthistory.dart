@@ -5,6 +5,8 @@ import 'tokenmanager.dart'; // Assuming this manages your token
 import 'constants.dart';
 
 class DependentHistoryPage extends StatefulWidget {
+  const DependentHistoryPage({super.key});
+
   @override
   _DependentHistoryPageState createState() => _DependentHistoryPageState();
 }
@@ -55,7 +57,7 @@ class _DependentHistoryPageState extends State<DependentHistoryPage> {
     return Card( // Wrap with Card for better UI
       child: ListTile(
         leading: Icon(Icons.payment, color: Theme.of(context).primaryColor),
-        title: Text(transaction['transaction_type']['name'], style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        title: Text(transaction['transaction_type']['name'], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         subtitle: Text('Completed on: ${transaction['completed_at']}', style: TextStyle(color: Colors.grey.shade600)),
         trailing: Text('RM${transaction['amount']}', style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold)),
       ),
@@ -66,18 +68,18 @@ class _DependentHistoryPageState extends State<DependentHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Transaction History"),
+        title: const Text("Transaction History"),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: _fetchTransactionHistory,
           )
         ],
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : transactions.isEmpty
-          ? Center(child: Text("No transactions found", style: TextStyle(fontSize: 16)))
+          ? const Center(child: Text("No transactions found", style: TextStyle(fontSize: 16)))
           : ListView.builder(
         itemCount: transactions.length,
         itemBuilder: (context, index) {

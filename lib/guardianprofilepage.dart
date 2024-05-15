@@ -5,6 +5,8 @@ import 'tokenmanager.dart';
 import 'constants.dart';
 
 class GuardianProfilePage extends StatefulWidget {
+  const GuardianProfilePage({super.key});
+
   @override
   _GuardianProfilePageState createState() => _GuardianProfilePageState();
 }
@@ -39,7 +41,7 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
         isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load profile data')),
+        const SnackBar(content: Text('Failed to load profile data')),
       );
     }
   }
@@ -59,7 +61,7 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
       Navigator.pushReplacementNamed(context, '/login');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to logout')),
+        const SnackBar(content: Text('Failed to logout')),
       );
     }
   }
@@ -68,16 +70,16 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Guardian Profile'),
+        title: const Text('Guardian Profile'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: _logout,
           ),
         ],
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
         child: Table(
           columnWidths: const <int, TableColumnWidth>{
@@ -101,17 +103,17 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
     return TableRow(
       children: [
         Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Text(title),
         ),
         Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Text(value),
         ),
         Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: IconButton(
-            icon: Icon(Icons.edit),
+            icon: const Icon(Icons.edit),
             onPressed: () => _showEditDialog(key, title, value),
           ),
         ),
@@ -120,14 +122,14 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
   }
 
   void _showEditDialog(String key, String title, String currentValue) {
-    TextEditingController _controller = TextEditingController(text: currentValue);
+    TextEditingController controller = TextEditingController(text: currentValue);
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text('Edit $title'),
           content: TextFormField(
-            controller: _controller,
+            controller: controller,
             decoration: InputDecoration(
               labelText: title,
             ),
@@ -135,14 +137,14 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                _updateProfile(key, _controller.text);
+                _updateProfile(key, controller.text);
                 Navigator.of(context).pop();
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         );
@@ -164,12 +166,12 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
 
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Profile updated successfully')),
+        const SnackBar(content: Text('Profile updated successfully')),
       );
       _fetchProfile();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update profile')),
+        const SnackBar(content: Text('Failed to update profile')),
       );
     }
   }

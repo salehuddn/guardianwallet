@@ -5,7 +5,7 @@ import 'guardianmenu.dart';
 class GuardianReceiptPage extends StatelessWidget {
   final Map<String, dynamic> transactionData;
 
-  GuardianReceiptPage({Key? key, required this.transactionData}) : super(key: key);
+  const GuardianReceiptPage({super.key, required this.transactionData});
 
   @override
   Widget build(BuildContext context) {
@@ -28,26 +28,26 @@ class GuardianReceiptPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Transaction Receipt'),
+        title: const Text('Transaction Receipt'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Reference: ${transactionData['reference'] ?? 'N/A'}'),
             Text('Amount: $formattedAmount'),
             Text('Completed at: $completedAt'),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Center(
               child: ElevatedButton(
                 onPressed: () {
                   // Direct navigation to the GuardianMenu widget using Navigator.pushReplacement
                   Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => GuardianMenuPage())
+                      MaterialPageRoute(builder: (context) => const GuardianMenuPage())
                   );
                 },
-                child: Text('DONE'),
+                child: const Text('DONE'),
               ),
             ),
           ],

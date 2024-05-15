@@ -14,7 +14,7 @@ import 'constants.dart';
 class GuardianMenuPage extends StatefulWidget {
 
   final int currentIndex;
-  GuardianMenuPage({this.currentIndex = 0}); // Set the home page as default
+  const GuardianMenuPage({super.key, this.currentIndex = 0}); // Set the home page as default
   @override
   _GuardianMenuPageState createState() => _GuardianMenuPageState();
 }
@@ -97,13 +97,13 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => GuardianMenuPage(currentIndex: index)));
         break;
       case 1:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => TransactionHistoryPage()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TransactionHistoryPage()));
         break;
       case 3:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => ManageDependentPage()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ManageDependentPage()));
         break;
       case 4:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => GuardianProfilePage()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const GuardianProfilePage()));
         break;
     // Add additional cases as needed
     }
@@ -111,7 +111,7 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
 
   Widget _buildBalanceInfo() {
     return ListTile(
-      leading: Icon(Icons.account_circle),
+      leading: const Icon(Icons.account_circle),
       title: Text('Welcome, $_userName'), // Use the dynamic name
       subtitle: Text(_balanceVisible ? 'RM${_balance.toStringAsFixed(2)}' : '*******'),
       trailing: IconButton(
@@ -128,7 +128,7 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
 
   Widget _buildQuickMenu() {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -136,17 +136,17 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
           children: <Widget>[
             _quickMenuButton(Icons.person_add, 'Create Dependent', () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => CreateDependentPage(),
+                builder: (context) => const CreateDependentPage(),
               ));
             }),
             _quickMenuButton(Icons.account_balance_wallet, 'Allocate Fund', () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => TransferFundDependentPage(),
+                builder: (context) => const TransferFundDependentPage(),
               ));
             }),
             _quickMenuButton(Icons.history, 'History', () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => TransactionHistoryPage(),
+                builder: (context) => const TransactionHistoryPage(),
               ));
             }),
           ],
@@ -170,10 +170,10 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
 
   Widget _buildNotificationsPanel() {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: ListTile(
-        leading: Icon(Icons.notifications),
-        title: Text('Notifications for the account'),
+        leading: const Icon(Icons.notifications),
+        title: const Text('Notifications for the account'),
         onTap: () {
           // Navigate to notifications page
         },
@@ -183,15 +183,15 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
 
   Widget _buildTransactionHistoryPanel() {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: Column(
         children: [
           ListTile(
-            leading: Icon(Icons.history),
-            title: Text('Latest Transaction History'),
+            leading: const Icon(Icons.history),
+            title: const Text('Latest Transaction History'),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => TransactionHistoryPage(),
+                builder: (context) => const TransactionHistoryPage(),
               ));
             },
           ),
@@ -206,8 +206,8 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
               }).toList(),
             )
           else
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Text('No recent transactions found.'),
             ),
         ],
@@ -218,14 +218,14 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
 
   Widget _buildBottomNavigationBar() {
     return BottomAppBar(
-      shape: CircularNotchedRectangle(),
+      shape: const CircularNotchedRectangle(),
       notchMargin: 6.0,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           _buildIconButton(Icons.home, 0),
           _buildIconButton(Icons.history, 1),
-          SizedBox(width: 48), // Placeholder for floating action button
+          const SizedBox(width: 48), // Placeholder for floating action button
           _buildIconButton(Icons.transfer_within_a_station, 3),
           _buildIconButton(Icons.supervised_user_circle, 4),
         ],
@@ -248,13 +248,15 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Guardian Dashboard'),
+        title: const Text('Guardian Dashboard'),
+        automaticallyImplyLeading: false,
+
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.account_circle),
+            icon: const Icon(Icons.account_circle),
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => GuardianProfilePage(),
+                builder: (context) => const GuardianProfilePage(),
               ));
             },
           ),
@@ -271,10 +273,10 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => TopUpWalletPage(),
+            builder: (context) => const TopUpWalletPage(),
           ));
         },
       ),

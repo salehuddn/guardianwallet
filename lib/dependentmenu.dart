@@ -7,14 +7,14 @@ import 'dependentprofile.dart'; // Corrected import
 import 'dependenthistory.dart'; // Corrected import
 import 'tokenmanager.dart';
 import 'transactionhistory.dart';
-import 'transferfunddependent.dart'; // Assuming this should be included if used
-import 'topupwallet.dart'; // Assuming this should be included if used
+// Assuming this should be included if used
+// Assuming this should be included if used
 import 'constants.dart';
 
 class DependentMenuPage extends StatefulWidget {
   final int currentIndex;
 
-  DependentMenuPage({this.currentIndex = 0}); // Set the home page as default
+  const DependentMenuPage({super.key, this.currentIndex = 0}); // Set the home page as default
 
   @override
   _DependentMenuPageState createState() => _DependentMenuPageState();
@@ -93,17 +93,17 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => DependentMenuPage(currentIndex: index)));
         break;
       case 1:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => DependentProfilePage()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DependentProfilePage()));
         break;
       case 3:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => DependentPaymentPage()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DependentPaymentPage()));
         break;
     }
   }
 
   Widget _buildBalanceInfo() {
     return ListTile(
-      leading: Icon(Icons.account_circle),
+      leading: const Icon(Icons.account_circle),
       title: Text('Welcome, $_userName'),
       subtitle: Text(_balanceVisible ? 'RM${_balance.toStringAsFixed(2)}' : '*******'),
       trailing: IconButton(
@@ -119,7 +119,7 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
 
   Widget _buildQuickMenu() {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -127,17 +127,17 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
           children: <Widget>[
             _quickMenuButton(Icons.payment, 'Pay', () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => DependentProfilePage(),
+                builder: (context) => const DependentPaymentPage(),
               ));
             }),
             _quickMenuButton(Icons.history, 'Expenses', () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => DependentHistoryPage(),
+                builder: (context) => const DependentHistoryPage(),
               ));
             }),
             _quickMenuButton(Icons.account_circle, 'Profile', () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => DependentProfilePage(),
+                builder: (context) => const DependentProfilePage(),
               ));
             }),
           ],
@@ -161,10 +161,10 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
 
   Widget _buildNotificationsPanel() {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: ListTile(
-        leading: Icon(Icons.notifications),
-        title: Text('Notifications for the account'),
+        leading: const Icon(Icons.notifications),
+        title: const Text('Notifications for the account'),
         onTap: () {
           // Navigate to notifications page
         },
@@ -174,15 +174,15 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
 
   Widget _buildTransactionHistoryPanel() {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: Column(
         children: [
           ListTile(
-            leading: Icon(Icons.history),
-            title: Text('Latest Transaction History'),
+            leading: const Icon(Icons.history),
+            title: const Text('Latest Transaction History'),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => TransactionHistoryPage(),
+                builder: (context) => const TransactionHistoryPage(),
               ));
             },
           ),
@@ -197,8 +197,8 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
               }).toList(),
             )
           else
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Text('No recent transactions found.'),
             ),
         ],
@@ -208,15 +208,15 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
 
   Widget _buildBottomNavigationBar() {
     return BottomAppBar(
-      shape: CircularNotchedRectangle(),
+      shape: const CircularNotchedRectangle(),
       notchMargin: 6.0,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           _buildIconButton(Icons.home, 0), // Home icon
-          Spacer(), // Use Spacer to center the middle icon
+          const Spacer(), // Use Spacer to center the middle icon
           _buildIconButton(Icons.qr_code_scanner, 3, isFloating: true), // Elevated QR Pay icon
-          Spacer(), // Use Spacer to justify the last icon to the end
+          const Spacer(), // Use Spacer to justify the last icon to the end
           _buildIconButton(Icons.account_circle, 1), // Profile icon
         ],
       ),
@@ -235,7 +235,9 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dependent Dashboard'),
+        title: const Text('Dependent Dashboard'),
+        automaticallyImplyLeading: false,
+
       ),
       body: ListView(
         children: <Widget>[
