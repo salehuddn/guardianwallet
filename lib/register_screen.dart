@@ -13,15 +13,15 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1A2833)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Register', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+      //   leading: IconButton(
+      //     icon: const Icon(Icons.arrow_back, color: Color(0xFF1A2833)),
+      //     onPressed: () => Navigator.of(context).pop(),
+      //   ),
+      //   backgroundColor: Colors.transparent,
+      //   elevation: 0,
+      // ),
       backgroundColor: Colors.transparent,
       body: Container(
         decoration: const BoxDecoration(
@@ -215,6 +215,13 @@ class _RegisterFormState extends State<RegisterForm> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               child: const Text('Register'),
+            ),
+            const SizedBox(height: 24),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, LoginScreen.routeName);
+              },
+              child: const Text('Already have an account? Sign in', style: TextStyle(color: Colors.blue)),
             ),
           ],
         ),

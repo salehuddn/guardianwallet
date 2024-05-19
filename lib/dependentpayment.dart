@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:guardianwallet/paymentinput.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-// Import the receipt page
-import 'constants.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-
-import 'tokenmanager.dart';  // Use mobile_scanner instead of qrscan
+import 'constants.dart';
+import 'tokenmanager.dart';
 
 class DependentPaymentPage extends StatefulWidget {
   const DependentPaymentPage({super.key});
@@ -21,62 +19,12 @@ class _DependentPaymentPageState extends State<DependentPaymentPage> {
   @override
   void initState() {
     super.initState();
-    // Remove WidgetsBinding if not needed
   }
 
   @override
   void dispose() {
     super.dispose();
   }
-
-  // void _handleQRScan(String qrResult) async {
-  //   print("QR Result: $qrResult");
-  //   try {
-  //     final token = await SecureSessionManager.getToken();
-  //     var url = Uri.parse('$BASE_API_URL/secured/dependant/scan-qr');
-  //     var response = await http.post(
-  //       url,
-  //       headers: {
-  //         'Authorization': 'Bearer $token',
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: jsonEncode({'qr_content': qrResult}),
-  //     );
-  //
-  //     print("HTTP response code: ${response.statusCode}");
-  //     print("HTTP response body: ${response.body}");
-  //
-  //     // Follow redirects manually if the server does not handle them.
-  //     while (response.statusCode == 302) {
-  //       var location = response.headers['location'];
-  //       if (location != null) {
-  //         url = Uri.parse(location);
-  //         response = await http.get(url);
-  //         print("Redirected to: $location with status code: ${response.statusCode}");
-  //       } else {
-  //         // Break the loop if no location is provided (unlikely to happen)
-  //         break;
-  //       }
-  //     }
-  //
-  //     if (response.statusCode == 200) {
-  //       var responseData = json.decode(response.body);
-  //       if (responseData.containsKey('merchant')) {
-  //         setState(() {
-  //           merchantId = responseData['merchant']['id'];
-  //         });
-  //         Navigator.of(context).push(MaterialPageRoute(builder: (_) => PaymentInputPage(merchantId: merchantId)));
-  //       } else {
-  //         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('No valid merchant data found')));
-  //       }
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to scan')));
-  //     }
-  //   } catch (e) {
-  //     print("Error occurred while sending request: $e");
-  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error occurred while sending request: $e')));
-  //   }
-  // }
 
   void _handleQRScan(String qrResult) async {
     print("QR Result: $qrResult");
@@ -119,33 +67,58 @@ class _DependentPaymentPageState extends State<DependentPaymentPage> {
     }
   }
 
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Scan Merchant QR'),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Expanded(
-            child: MobileScanner(
-                onDetect: (capture) {
-                  final Barcode? barcode = capture.barcodes.firstOrNull;
-                  final String? code = barcode?.rawValue;
-                  if (code != null) {
-                    _handleQRScan(code);
-                  }
-                }
-
+      body: Stack(
+        children: [
+          MobileScanner(
+            onDetect: (capture) {
+              final Barcode? barcode = capture.barcodes.firstOrNull;
+              final String? code = barcode?.rawValue;
+              if (code != null) {
+                _handleQRScan(code);
+              }
+            },
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Container(
+              margin: const EdgeInsets.only(top: 40),
+              padding: const EdgeInsets.all(10),
+              color: Colors.black.withOpacity(0.5),
+              child: const Text(
+                'Point the camera at the QR code',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
             ),
           ),
-          Text(merchantId.isNotEmpty ? 'Merchant: $merchantId' : 'No merchant scanned'),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                merchantId.isNotEmpty ? 'Merchant: $merchantId' : 'No merchant scanned',
+                style: const TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ),
+          ),
+          // Align(
+          //   alignment: Alignment.bottomCenter,
+          //   child: Container(
+          //     margin: const EdgeInsets.only(bottom: 20),
+          //     child: ElevatedButton(
+          //       onPressed: () {
+          //         // You can add additional functionality here (e.g., a button to manually enter the code)
+          //       },
+          //       child: const Text('Enter Code Manually'),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

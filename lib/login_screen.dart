@@ -15,16 +15,16 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign In', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),  // Title added
-        leading: IconButton(
-
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1A2833)),  // Correctly formatted back button color
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        backgroundColor: Colors.transparent,  // Blends with the background
-        elevation: 0,
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Sign In', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),  // Title added
+      //   // leading: IconButton(
+      //   //
+      //   //   icon: const Icon(Icons.arrow_back, color: Color(0xFF1A2833)),  // Correctly formatted back button color
+      //   //   onPressed: () => Navigator.of(context).pop(),
+      //   // ),
+      //   backgroundColor: Colors.transparent,  // Blends with the background
+      //   elevation: 0,
+      // ),
       backgroundColor: Colors.transparent,
       body: Container(
         decoration: const BoxDecoration(
