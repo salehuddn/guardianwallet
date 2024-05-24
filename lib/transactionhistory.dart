@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'tokenmanager.dart';
 import 'constants.dart';
+import 'bottomappbar.dart';
 
 class TransactionHistoryPage extends StatefulWidget {
   const TransactionHistoryPage({super.key});
@@ -33,6 +34,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       });
     } else {
       // Handle errors
+      print('Error fetching transactions: ${response.body}');
     }
   }
 
@@ -41,18 +43,35 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Transaction History'),
+        automaticallyImplyLeading: false, // Remove the back button
       ),
       body: ListView.builder(
         itemCount: transactions.length,
         itemBuilder: (context, index) {
           var transaction = transactions[index];
+          Color amountColor;
+          Icon transactionIcon;
+
+          if (transaction['transaction_type']['name'] == 'Transfer Fund') {
+            amountColor = Colors.red;
+            transactionIcon = Icon(Icons.arrow_upward, color: amountColor);
+          } else {
+            amountColor = Colors.green;
+            transactionIcon = Icon(Icons.arrow_downward, color: amountColor);
+          }
+
           return ListTile(
+            leading: transactionIcon,
             title: Text(transaction['transaction_type']['name']),
             subtitle: Text('Completed at: ${transaction['completed_at']}'),
-            trailing: Text('RM${transaction['amount']}'),
+            trailing: Text(
+              'RM${transaction['amount']}',
+              style: TextStyle(color: amountColor),
+            ),
           );
         },
       ),
+      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 1),
     );
   }
 }

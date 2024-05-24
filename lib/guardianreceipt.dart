@@ -10,12 +10,14 @@ class GuardianReceiptPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Ensure 'completed_at' is present and correctly formatted
-    String completedAt = 'N/A';
+    DateTime completedAt;
+    String formattedCompletedAt = 'Invalid date';
     if (transactionData['completed_at'] != null) {
       try {
-        completedAt = DateFormat('d MMMM y H:mm').format(DateTime.parse(transactionData['completed_at']));
+        completedAt = DateTime.parse(transactionData['completed_at']);
+        formattedCompletedAt = DateFormat('dd/MM/yy HH:mm').format(completedAt);
       } catch (e) {
-        completedAt = 'Invalid date';
+        formattedCompletedAt = 'Invalid date';
       }
     }
 
@@ -27,30 +29,121 @@ class GuardianReceiptPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Transaction Receipt'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Reference: ${transactionData['reference'] ?? 'N/A'}'),
-            Text('Amount: $formattedAmount'),
-            Text('Completed at: $completedAt'),
-            const SizedBox(height: 24),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Direct navigation to the GuardianMenu widget using Navigator.pushReplacement
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const GuardianMenuPage())
-                  );
-                },
-                child: const Text('DONE'),
+      backgroundColor: Color(0xFFF2F2F2),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                      size: 80,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Payment Success!',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      formattedAmount,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Divider(),
+                    SizedBox(height: 16),
+                    Text(
+                      'Payment Details',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Transaction ID'),
+                        Text('${transactionData['reference'] ?? 'N/A'}'),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Status'),
+                        Row(
+                          children: [
+                            Text('${transactionData['status'] ?? 'N/A'}'),
+                            SizedBox(width: 4),
+                            Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Completed At'),
+                        Text(formattedCompletedAt),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Description'),
+                        Text('${transactionData['narration'] ?? 'N/A'}'),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                  ],
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (_) => const GuardianMenuPage()),
+                        );
+                      },
+                      child: const Text('DONE'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

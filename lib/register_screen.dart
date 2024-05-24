@@ -164,7 +164,7 @@ class _RegisterFormState extends State<RegisterForm> {
               decoration: const InputDecoration(
                 enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
                 focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                labelText: 'Password',
+                labelText: 'Password (Min. 8 chracters',
                 labelStyle: TextStyle(color: Colors.white),
                 prefixIcon: Icon(Icons.lock, color: Colors.white),
               ),
@@ -183,7 +183,7 @@ class _RegisterFormState extends State<RegisterForm> {
               decoration: InputDecoration(
                 enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
                 focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                labelText: 'Date of Birth',
+                labelText: 'Date of Birth (Must be over 18)',
                 labelStyle: const TextStyle(color: Colors.white),
                 prefixIcon: const Icon(Icons.calendar_today, color: Colors.white),
                 suffixIcon: IconButton(
@@ -193,7 +193,7 @@ class _RegisterFormState extends State<RegisterForm> {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your date of birth';
+                  return 'Please enter your date of birth ';
                 }
                 return null;
               },

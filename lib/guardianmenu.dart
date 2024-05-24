@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guardianwallet/guardiannotification.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -10,21 +11,30 @@ import 'transactionhistory.dart';
 import 'transferfunddependent.dart';
 import 'topupwallet.dart';
 import 'constants.dart';
+import 'bottomappbar.dart';
 
 class GuardianMenuPage extends StatefulWidget {
-
   final int currentIndex;
   const GuardianMenuPage({super.key, this.currentIndex = 0}); // Set the home page as default
+
   @override
   _GuardianMenuPageState createState() => _GuardianMenuPageState();
 }
 
 class _GuardianMenuPageState extends State<GuardianMenuPage> {
-
   double _balance = 0.0;
   bool _balanceVisible = false;
   String _userName = "Loading..."; // Default text while loading
   List<Map<String, dynamic>> _latestTransactions = [];
+  List<dynamic> _latestNotifications = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchWalletBalance();
+    _fetchLatestTransactions();
+    _fetchLatestNotifications();
+  }
 
   void _fetchWalletBalance() async {
     final token = await SecureSessionManager.getToken();
@@ -50,8 +60,6 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
       print('Error fetching profile data: ${profileResponse.body}');
     }
   }
-
-
 
   Future<void> _fetchLatestTransactions() async {
     final token = await SecureSessionManager.getToken();
@@ -82,66 +90,122 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
     }
   }
 
+  Future<void> _fetchLatestNotifications() async {
+    final token = await SecureSessionManager.getToken();
+    final response = await http.get(
+      Uri.parse('$BASE_API_URL/secured/notifications'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
 
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchWalletBalance();
-    _fetchLatestTransactions();
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        _latestNotifications = data.take(3).toList();
+      });
+    } else {
+      print('Error fetching notifications: ${response.body}');
+    }
   }
 
-  void _selectPage(int index) {
-    switch (index) {
-      case 0:
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => GuardianMenuPage(currentIndex: index)));
-        break;
-      case 1:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TransactionHistoryPage()));
-        break;
-      case 3:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ManageDependentPage()));
-        break;
-      case 4:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const GuardianProfilePage()));
-        break;
-    // Add additional cases as needed
+  Future<void> _markNotificationAsRead(String notificationId) async {
+    final token = await SecureSessionManager.getToken();
+    final response = await http.post(
+      Uri.parse('$BASE_API_URL/secured/notifications/$notificationId/read'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      print('Error marking notification as read: ${response.body}');
     }
   }
 
   Widget _buildBalanceInfo() {
-    return ListTile(
-      leading: const Icon(Icons.account_circle),
-      title: Text('Welcome, $_userName'), // Use the dynamic name
-      subtitle: Text(_balanceVisible ? 'RM${_balance.toStringAsFixed(2)}' : '*******'),
-      trailing: IconButton(
-        icon: Icon(_balanceVisible ? Icons.visibility : Icons.visibility_off),
-        onPressed: () {
-          setState(() {
-            _balanceVisible = !_balanceVisible;
-          });
-        },
-      ),
+    return Stack(
+      clipBehavior: Clip.none, // Ensures the overflow is visible
+      children: [
+        Image.asset(
+          'assets/img/guardianmenubg.png',
+          width: double.infinity,
+          height: 187,
+          fit: BoxFit.cover,
+        ),
+        Positioned(
+          top: 40,
+          left: 16,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Welcome, $_userName',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Row(
+                children: [
+                  Text(
+                    _balanceVisible ? 'RM${_balance.toStringAsFixed(2)}' : '*******',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      _balanceVisible ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _balanceVisible = !_balanceVisible;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          top: 40,
+          right: 16,
+          child: IconButton(
+            icon: Icon(Icons.account_circle, color: Colors.white),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const GuardianProfilePage(),
+              ));
+            },
+          ),
+        ),
+        Positioned(
+          bottom: -50, // Adjust this value to position the menu correctly
+          left: 0,
+          right: 0,
+          child: _buildQuickMenu(),
+        ),
+      ],
     );
   }
 
-
   Widget _buildQuickMenu() {
     return Card(
-      margin: const EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(15.0),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            _quickMenuButton(Icons.person_add, 'Create Dependent', () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const CreateDependentPage(),
-              ));
-            }),
-            _quickMenuButton(Icons.account_balance_wallet, 'Allocate Fund', () {
+            _quickMenuButton(Icons.swap_vert, 'Allocate Fund', () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const TransferFundDependentPage(),
+              ));
+            }),
+            _quickMenuButton(Icons.person, 'Create Dependent', () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const CreateDependentPage(),
               ));
             }),
             _quickMenuButton(Icons.history, 'History', () {
@@ -170,20 +234,47 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
 
   Widget _buildNotificationsPanel() {
     return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: ListTile(
-        leading: const Icon(Icons.notifications),
-        title: const Text('Notifications for the account'),
-        onTap: () {
-          // Navigate to notifications page
-        },
+      margin: const EdgeInsets.all(15.0),
+      child: Column(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.notifications),
+            title: const Text('Notifications for the account'),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const GuardianNotificationPage(),
+              ));
+            },
+          ),
+          if (_latestNotifications.isNotEmpty)
+            Column(
+              children: _latestNotifications.map((notification) {
+                return ListTile(
+                  leading: const Icon(Icons.notification_important),
+                  title: Text(notification['data']['title']),
+                  subtitle: Text(notification['data']['message']),
+                  onTap: () async {
+                    await _markNotificationAsRead(notification['id']);
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const GuardianNotificationPage(),
+                    ));
+                  },
+                );
+              }).toList(),
+            )
+          else
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text('No recent notifications found.'),
+            ),
+        ],
       ),
     );
   }
 
   Widget _buildTransactionHistoryPanel() {
     return Card(
-      margin: const EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(15.0),
       child: Column(
         children: [
           ListTile(
@@ -198,10 +289,23 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
           if (_latestTransactions.isNotEmpty)
             Column(
               children: _latestTransactions.map((transaction) {
+                Color amountColor;
+                Icon transactionIcon;
+                if (transaction['transaction_type']['name'] == 'Transfer Fund') {
+                  amountColor = Colors.red;
+                  transactionIcon = Icon(Icons.arrow_upward, color: amountColor);
+                } else {
+                  amountColor = Colors.green;
+                  transactionIcon = Icon(Icons.arrow_downward, color: amountColor);
+                }
                 return ListTile(
+                  leading: transactionIcon,
                   title: Text(transaction['transaction_type']['name']),
                   subtitle: Text('Completed at: ${transaction['completed_at']}'),
-                  trailing: Text('RM${transaction['amount']}'),
+                  trailing: Text(
+                    'RM${transaction['amount']}',
+                    style: TextStyle(color: amountColor),
+                  ),
                 );
               }).toList(),
             )
@@ -215,73 +319,31 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
     );
   }
 
-
-  Widget _buildBottomNavigationBar() {
-    return BottomAppBar(
-      shape: const CircularNotchedRectangle(),
-      notchMargin: 6.0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          _buildIconButton(Icons.home, 0),
-          _buildIconButton(Icons.history, 1),
-          const SizedBox(width: 48), // Placeholder for floating action button
-          _buildIconButton(Icons.transfer_within_a_station, 3),
-          _buildIconButton(Icons.supervised_user_circle, 4),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIconButton(IconData icon, int index) {
-    return IconButton(
-      icon: Icon(icon),
-      color: widget.currentIndex == index ? Colors.blue : Colors.grey,
-      onPressed: () => _selectPage(index),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    // Replace these with actual values
-
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Guardian Dashboard'),
-        automaticallyImplyLeading: false,
-
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const GuardianProfilePage(),
-              ));
-            },
+      body: Column(
+        children: [
+          Stack(
+            clipBehavior: Clip.none, // Ensures the overflow is visible
+            children: [
+              _buildBalanceInfo(),
+            ],
+          ),
+          Expanded(
+            child: ListView(
+              children: <Widget>[
+                SizedBox(height: 10), // Adjust height to ensure the quick menu is visible
+                _buildNotificationsPanel(),
+                SizedBox(height: 10), // Add spacing to bring the panels closer together
+                _buildTransactionHistoryPanel(),
+                // Add more widgets as needed
+              ],
+            ),
           ),
         ],
       ),
-
-      body: ListView(
-        children: <Widget>[
-          _buildBalanceInfo( ),
-          _buildQuickMenu(),
-          _buildNotificationsPanel(),
-          _buildTransactionHistoryPanel(),
-          // Add more widgets as needed
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const TopUpWalletPage(),
-          ));
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: CustomBottomAppBar(currentIndex: widget.currentIndex),
     );
   }
 }

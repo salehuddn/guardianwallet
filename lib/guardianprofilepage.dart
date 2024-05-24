@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'tokenmanager.dart';
 import 'constants.dart';
+import 'bottomappbar.dart';
 
 class GuardianProfilePage extends StatefulWidget {
   const GuardianProfilePage({super.key});
@@ -71,6 +72,7 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Guardian Profile'),
+        automaticallyImplyLeading: false, // Remove the back button
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.logout),
@@ -81,43 +83,37 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        child: Table(
-          columnWidths: const <int, TableColumnWidth>{
-            0: FlexColumnWidth(),
-            1: FlexColumnWidth(),
-            2: FixedColumnWidth(48.0),
-          },
-          children: [
-            _buildTableRow('Name', profileData['name'] ?? 'N/A', 'name'),
-            _buildTableRow('Email', profileData['email'] ?? 'N/A', 'email'),
-            _buildTableRow('Phone Number', profileData['phone'] ?? 'N/A', 'phone'),
-            _buildTableRow('Date of Birth', profileData['dob']?.substring(0, 10) ?? 'N/A', 'dob'),
-            _buildTableRow('Password', '********', 'password'), // Display obscured password
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 16),
+              _buildProfileField(Icons.person, 'Name', profileData['name'] ?? 'N/A', 'name'),
+              _buildProfileField(Icons.email, 'Email', profileData['email'] ?? 'N/A', 'email'),
+              _buildProfileField(Icons.phone, 'Phone Number', profileData['phone'] ?? 'N/A', 'phone'),
+              _buildProfileField(Icons.cake, 'Date of Birth', profileData['dob']?.substring(0, 10) ?? 'N/A', 'dob'),
+              _buildProfileField(Icons.lock, 'Password', '********', 'password'),
+            ],
+          ),
         ),
       ),
+      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 4),
     );
   }
 
-  TableRow _buildTableRow(String title, String value, String key) {
-    return TableRow(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(title),
+  Widget _buildProfileField(IconData icon, String title, String value, String key) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      child: ListTile(
+        leading: Icon(icon),
+        title: Text(title),
+        subtitle: Text(value),
+        trailing: IconButton(
+          icon: Icon(Icons.edit),
+          onPressed: () => _showEditDialog(key, title, value),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(value),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => _showEditDialog(key, title, value),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -161,7 +157,8 @@ class _GuardianProfilePageState extends State<GuardianProfilePage> {
         'Content-Type': 'application/json',
       },
       body: json.encode({
-        key: value}),
+        key: value,
+      }),
     );
 
     if (response.statusCode == 200) {

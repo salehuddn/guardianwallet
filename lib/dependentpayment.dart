@@ -15,14 +15,17 @@ class DependentPaymentPage extends StatefulWidget {
 
 class _DependentPaymentPageState extends State<DependentPaymentPage> {
   String merchantId = '';
+  late MobileScannerController _cameraController;
 
   @override
   void initState() {
     super.initState();
+    _cameraController = MobileScannerController();
   }
 
   @override
   void dispose() {
+    _cameraController.dispose();
     super.dispose();
   }
 
@@ -76,6 +79,7 @@ class _DependentPaymentPageState extends State<DependentPaymentPage> {
       body: Stack(
         children: [
           MobileScanner(
+            controller: _cameraController,
             onDetect: (capture) {
               final Barcode? barcode = capture.barcodes.firstOrNull;
               final String? code = barcode?.rawValue;

@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'guardianreceipt.dart';
 import 'constants.dart';
+import 'bottomappbar.dart';
 
 class TopUpWalletPage extends StatefulWidget {
   const TopUpWalletPage({super.key});
@@ -42,7 +43,10 @@ class _TopUpWalletPageState extends State<TopUpWalletPage> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => Scaffold(
-            appBar: AppBar(title: const Text('Top Up')),
+            appBar: AppBar(
+              title: const Text('Top Up'),
+              automaticallyImplyLeading: false, // Remove the back button
+            ),
             body: WebView(
               initialUrl: checkoutUrl,
               javascriptMode: JavascriptMode.unrestricted,
@@ -102,6 +106,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Top Up Wallet'),
+        automaticallyImplyLeading: false, // Remove the back button
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -122,6 +127,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage> {
           ],
         ),
       ),
+      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 2),
     );
   }
 }

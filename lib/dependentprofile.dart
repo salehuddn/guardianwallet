@@ -52,6 +52,7 @@ class _DependentProfilePageState extends State<DependentProfilePage> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      print('Fetched Profile Data: $data'); // Debug logging
       setState(() {
         profileData = data['user'];
         isLoading = false;
@@ -119,6 +120,18 @@ class _DependentProfilePageState extends State<DependentProfilePage> {
             ),
           ],
         ),
+        // TableRow(
+        //   children: [
+        //     const Padding(
+        //       padding: EdgeInsets.all(8.0),
+        //       child: Text('Spending Limit (RM)', style: TextStyle(fontWeight: FontWeight.bold)),
+        //     ),
+        //     Padding(
+        //       padding: const EdgeInsets.all(8.0),
+        //       child: Text(profileData['spending_limit']?.toString() ?? 'N/A'), // Ensure spending_limit is converted to String
+        //     ),
+        //   ],
+        // ),
       ],
     );
   }

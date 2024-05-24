@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'tokenmanager.dart';
 import 'constants.dart';
+import 'bottomappbar.dart';
 
 class ManageDependentPage extends StatefulWidget {
   const ManageDependentPage({super.key});
@@ -45,40 +46,59 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
   }
 
   void _showEditDialog(String key, String title, String currentValue) {
-    TextEditingController controller = TextEditingController(text: currentValue);
-    showDialog(
+    if (key == 'dob') {
+      _selectDate(context, currentValue);
+    } else {
+      TextEditingController controller = TextEditingController(text: currentValue);
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Edit $title'),
+            content: TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                labelText: 'Enter $title',
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  _updateDependent(key, controller.text);
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context, String currentValue) async {
+    DateTime initialDate = DateTime.tryParse(currentValue) ?? DateTime.now();
+    DateTime? pickedDate = await showDatePicker(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Edit $title'),
-          content: TextFormField(
-            controller: controller,
-            decoration: InputDecoration(
-              labelText: 'Enter $title',
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                _updateDependent(key, controller.text);
-                Navigator.of(context).pop();
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
+      initialDate: initialDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
     );
+
+    if (pickedDate != null) {
+      String formattedDate = "${pickedDate.toLocal()}".split(' ')[0];
+      _updateDependent('dob', formattedDate);
+    }
   }
 
   Future<void> _updateDependent(String key, String value) async {
     final token = await SecureSessionManager.getToken();
     final response = await http.post(
-      Uri.parse('$BASE_API_URL/secured/guardian/update-dependent'),
+      Uri.parse('$BASE_API_URL/secured/guardian/update-dependant/${selectedDependent['id']}'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -88,6 +108,9 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
         key: value,
       }),
     );
+
+    print('Response Body: ${response.body}');
+
 
     if (response.statusCode == 200) {
       setState(() {
@@ -108,6 +131,7 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manage Dependents'),
+        automaticallyImplyLeading: false, // Remove the back button
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -130,26 +154,36 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
               hint: const Text('Select a dependent'),
             ),
             selectedDependent != null ? _buildDependentDetails() : Container(),
+            selectedDependent != null ? _buildTransactionHistory() : Container(),
           ],
         ),
       ),
+      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 3),
     );
   }
 
   Widget _buildDependentDetails() {
-    return Table(
-      columnWidths: const {
-        0: FlexColumnWidth(1),
-        1: FlexColumnWidth(2),
-        2: FixedColumnWidth(48.0),
-      },
-      children: [
-        _buildTableRow('Name', selectedDependent['name'], 'name', true),
-        _buildTableRow('Email', selectedDependent['email'], 'email', true),
-        _buildTableRow('Date of Birth', selectedDependent['dob'].substring(0, 10), 'dob', true),
-        _buildTableRow('Phone', selectedDependent['phone'] ?? 'N/A', 'phone', true),
-        _buildTableRow('Wallet', 'RM${selectedDependent['wallet'] ?? '0.00'}', 'wallet', false),
-      ],
+    return Card(
+      margin: const EdgeInsets.all(16.0),
+      elevation: 4.0,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Table(
+          columnWidths: const {
+            0: FlexColumnWidth(1),
+            1: FlexColumnWidth(2),
+            2: FixedColumnWidth(48.0),
+          },
+          children: [
+            _buildTableRow('Name', selectedDependent['name'], 'name', true),
+            _buildTableRow('Email', selectedDependent['email'], 'email', true),
+            _buildTableRow('Date of Birth', selectedDependent['dob'].substring(0, 10), 'dob', true),
+            _buildTableRow('Spending Limit (RM)', '${selectedDependent['spending_limit'] ?? '0.00'}', 'spending_limit', true),
+            _buildTableRow('Phone', selectedDependent['phone'] ?? 'N/A', 'phone', true),
+            _buildTableRow('Wallet', 'RM${selectedDependent['wallet'] ?? '0.00'}', 'wallet', false),
+          ],
+        ),
+      ),
     );
   }
 
@@ -172,6 +206,44 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
           ) : Container(),
         ),
       ],
+    );
+  }
+
+  Widget _buildTransactionHistory() {
+    final transactionHistory = selectedDependent['transaction_history'] as List<dynamic>;
+    if (transactionHistory.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text('No transaction history available.'),
+      );
+    }
+    return Card(
+      margin: const EdgeInsets.all(16.0),
+      elevation: 4.0,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Transaction History', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 8.0),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: transactionHistory.length,
+              itemBuilder: (context, index) {
+                final transaction = transactionHistory[index];
+                return ListTile(
+                  leading: Icon(Icons.monetization_on, color: Colors.green[700]),
+                  title: Text('${transaction['transaction_type']['name']} - RM${transaction['amount']}'),
+                  subtitle: Text(transaction['completed_at']),
+                  trailing: Text(transaction['status']),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

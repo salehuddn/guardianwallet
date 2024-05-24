@@ -100,7 +100,7 @@ class _LoginFormState extends State<LoginForm> {
               decoration: const InputDecoration(
                 enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
                 focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                labelText: 'Email/Phone Number',
+                labelText: 'Email',
                 labelStyle: TextStyle(color: Colors.white),
                 prefixIcon: Icon(Icons.person, color: Colors.white),
               ),

@@ -12,7 +12,7 @@
 
 
     <application
-        android:label="guardianwallet"
+        android:label="GuardianWallet"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

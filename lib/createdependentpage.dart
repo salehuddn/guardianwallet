@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'bottomappbar.dart';
 import 'tokenmanager.dart'; // Assuming you have this file set up for token management.
 import 'constants.dart';
 
@@ -17,6 +18,21 @@ class _CreateDependentPageState extends State<CreateDependentPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _dateOfBirthController = TextEditingController();
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _dateOfBirthController.text = "${pickedDate.toLocal()}".split(' ')[0];
+      });
+    }
+  }
 
   Future<void> _registerDependent() async {
     final token = await SecureSessionManager.getToken(); // Get the token for the session
@@ -36,7 +52,6 @@ class _CreateDependentPageState extends State<CreateDependentPage> {
     );
     print('Response Body: ${response.body}');
     if (response.statusCode == 201) {
-
       // Dependent creation was successful
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Dependent Successfully Created!')),
@@ -95,14 +110,27 @@ class _CreateDependentPageState extends State<CreateDependentPage> {
               ),
               TextFormField(
                 controller: _dateOfBirthController,
-                decoration: const InputDecoration(labelText: 'Date of Birth'),
+                readOnly: true,
+                decoration: InputDecoration(
+                  enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                  focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+                  labelText: 'Date of Birth (Must be under 18)',
+                  labelStyle: const TextStyle(color: Colors.grey),
+                  prefixIcon: const Icon(Icons.calendar_today, color: Colors.grey),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.calendar_today, color: Colors.grey),
+                    onPressed: () => _selectDate(context),
+                  ),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the date of birth.';
+                    return 'Please enter your date of birth';
                   }
                   return null;
                 },
+                onTap: () => _selectDate(context),
               ),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -115,6 +143,7 @@ class _CreateDependentPageState extends State<CreateDependentPage> {
           ),
         ),
       ),
+      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 3), // Use an appropriate index
     );
   }
 }
