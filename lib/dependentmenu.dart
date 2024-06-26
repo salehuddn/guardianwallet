@@ -9,6 +9,7 @@ import 'dependenthistory.dart';
 import 'tokenmanager.dart';
 import 'transactionhistory.dart';
 import 'constants.dart';
+import 'dependenttabung.dart'; // Make sure this import is correct
 
 class DependentMenuPage extends StatefulWidget {
   final int currentIndex;
@@ -214,9 +215,9 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
                 builder: (context) => const DependentHistoryPage(),
               ));
             }),
-            _quickMenuButton(Icons.account_circle, 'Profile', () {
+            _quickMenuButton(Icons.savings, 'Tabung', () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const DependentProfilePage(),
+                builder: (context) => const DependentTabungPage(),
               ));
             }),
           ],
@@ -288,7 +289,7 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
             title: const Text('Latest Transaction History'),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const TransactionHistoryPage(),
+                builder: (context) => const DependentHistoryPage(),
               ));
             },
           ),
@@ -340,10 +341,6 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Dependent Dashboard'),
-      //   automaticallyImplyLeading: false,
-      // ),
       body: ListView(
         children: <Widget>[
           _buildBalanceInfo(),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:guardianwallet/dependentpayment.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'tokenmanager.dart'; // Assumed necessary for token
+import 'dependentmenu.dart';
+import 'tokenmanager.dart';
 import 'constants.dart';
 
 class DependentProfilePage extends StatefulWidget {
@@ -19,26 +21,6 @@ class _DependentProfilePageState extends State<DependentProfilePage> {
   void initState() {
     super.initState();
     _fetchProfile();
-  }
-
-  Future<void> _logout() async {
-    final token = await SecureSessionManager.getToken();
-    final response = await http.post(
-      Uri.parse('$BASE_API_URL/secured/logout'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-    print('Response Body: ${response.body}');
-    if (response.statusCode == 200) {
-      SecureSessionManager.deleteToken();
-      Navigator.pushReplacementNamed(context, '/login');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to logout')),
-      );
-    }
   }
 
   Future<void> _fetchProfile() async {
@@ -68,71 +50,92 @@ class _DependentProfilePageState extends State<DependentProfilePage> {
     }
   }
 
-  Widget _buildProfileDetails() {
-    return Table(
-      border: TableBorder.all(width: 1.0, color: Colors.grey),
-      children: [
-        TableRow(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Name', style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(profileData['name'] ?? 'N/A'),
-            ),
-          ],
-        ),
-        TableRow(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Email', style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(profileData['email'] ?? 'N/A'),
-            ),
-          ],
-        ),
-        TableRow(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Date of Birth', style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(profileData['dob']?.substring(0, 10) ?? 'N/A'),
-            ),
-          ],
-        ),
-        TableRow(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Phone', style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(profileData['phone'] ?? 'N/A'),
-            ),
-          ],
-        ),
-        // TableRow(
-        //   children: [
-        //     const Padding(
-        //       padding: EdgeInsets.all(8.0),
-        //       child: Text('Spending Limit (RM)', style: TextStyle(fontWeight: FontWeight.bold)),
-        //     ),
-        //     Padding(
-        //       padding: const EdgeInsets.all(8.0),
-        //       child: Text(profileData['spending_limit']?.toString() ?? 'N/A'), // Ensure spending_limit is converted to String
-        //     ),
-        //   ],
+  Future<void> _logout() async {
+    final token = await SecureSessionManager.getToken();
+    final response = await http.post(
+      Uri.parse('$BASE_API_URL/secured/logout'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+    print('Response Body: ${response.body}');
+    if (response.statusCode == 200) {
+      SecureSessionManager.deleteToken();
+      Navigator.pushReplacementNamed(context, '/login');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to logout')),
+      );
+    }
+  }
+
+  Widget _buildProfileField(IconData icon, String title, String value, String key) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: ListTile(
+        leading: Icon(icon),
+        title: Text(title),
+        subtitle: Text(value),
+        // trailing: IconButton(
+        //   icon: Icon(Icons.edit),
+        //   onPressed: () => _showEditDialog(key, title, value),
         // ),
+      ),
+    );
+  }
+
+
+  Widget _buildProfileDetails() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(height: 16),
+        _buildProfileField(Icons.person, 'Name', profileData['name'] ?? 'N/A', 'name'),
+        _buildProfileField(Icons.email, 'Email', profileData['email'] ?? 'N/A', 'email'),
+        _buildProfileField(Icons.cake, 'Date of Birth', profileData['dob']?.substring(0, 10) ?? 'N/A', 'dob'),
+        _buildProfileField(Icons.phone, 'Phone', profileData['phone'] ?? 'N/A', 'phone'),
+        _buildProfileField(Icons.warning, 'Spending Limit', profileData['spending_limit'] ?? 'N/A', 'spending_limit'),
       ],
+    );
+  }
+
+  void _selectPage(int index) {
+    switch (index) {
+      case 0:
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => DependentMenuPage(currentIndex: index)));
+        break;
+      case 1:
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const DependentProfilePage()));
+        break;
+      case 3:
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const DependentPaymentPage()));
+        break;
+    }
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return BottomAppBar(
+      shape: const CircularNotchedRectangle(),
+      notchMargin: 6.0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          _buildIconButton(Icons.home, 0),
+          const Spacer(),
+          _buildIconButton(Icons.qr_code_scanner, 3, isFloating: true),
+          const Spacer(),
+          _buildIconButton(Icons.account_circle, 1),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIconButton(IconData icon, int index, {bool isFloating = false}) {
+    return IconButton(
+      icon: Icon(icon, color: index == 1 ? Colors.blue : Colors.black), // Highlight the current page icon
+      iconSize: isFloating ? 30.0 : 24.0,
+      onPressed: () => _selectPage(index),
     );
   }
 
@@ -156,6 +159,7 @@ class _DependentProfilePageState extends State<DependentProfilePage> {
           child: _buildProfileDetails(),
         ),
       ),
+      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 }

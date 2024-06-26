@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'guardianmenu.dart';
-import 'transactionhistory.dart';
 import 'managedependent.dart';
-import 'guardianprofilepage.dart';
 import 'topupwallet.dart';
 
 class CustomBottomAppBar extends StatelessWidget {
@@ -16,25 +14,35 @@ class CustomBottomAppBar extends StatelessWidget {
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => GuardianMenuPage(currentIndex: index)));
         break;
       case 1:
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const TransactionHistoryPage()));
-        break;
-      case 2:
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const TopUpWalletPage()));
         break;
-      case 3:
+      case 2:
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const ManageDependentPage()));
-        break;
-      case 4:
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const GuardianProfilePage()));
         break;
     }
   }
 
-  Widget _buildIconButton(BuildContext context, IconData icon, int index) {
-    return IconButton(
-      icon: Icon(icon),
-      color: currentIndex == index ? Colors.blue : Colors.grey,
-      onPressed: () => _selectPage(context, index),
+  Widget _buildIconButton(BuildContext context, IconData icon, int index, String label) {
+    return GestureDetector(
+      onTap: () => _selectPage(context, index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(
+            icon,
+            color: currentIndex == index ? Colors.blue : Colors.grey,
+          ),
+          const SizedBox(height: 2),  // Add spacing between icon and text
+          Text(
+            label,
+            style: TextStyle(
+              color: currentIndex == index ? Colors.blue : Colors.grey,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -46,11 +54,9 @@ class CustomBottomAppBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          _buildIconButton(context, Icons.home, 0),
-          _buildIconButton(context, Icons.history, 1),
-          _buildIconButton(context, Icons.attach_money, 2),
-          _buildIconButton(context, Icons.transfer_within_a_station, 3),
-          _buildIconButton(context, Icons.supervised_user_circle, 4),
+          _buildIconButton(context, Icons.home, 0, 'Home'),
+          _buildIconButton(context, Icons.attach_money, 1, 'Top Up Wallet'),
+          _buildIconButton(context, Icons.transfer_within_a_station, 2, 'Dependent'),
         ],
       ),
     );

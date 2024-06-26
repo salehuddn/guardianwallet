@@ -34,6 +34,7 @@ dependencies:
   flutter_secure_storage: ^4.2.0
   intl: ^0.17.0
   webview_flutter: ^2.0.13
+  pie_chart: ^5.4.0
 
 
   awesome_dialog: ^3.2.1
@@ -44,6 +45,8 @@ dependencies:
   cupertino_icons: ^1.0.6
   mobile_scanner: ^5.1.0
   local_auth: ^2.2.0
+  fl_chart: ^0.68.0
+
 
 
 

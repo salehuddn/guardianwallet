@@ -127,7 +127,7 @@ class _TopUpWalletPageState extends State<TopUpWalletPage> {
           ],
         ),
       ),
-      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 2),
+      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 1),
     );
   }
 }

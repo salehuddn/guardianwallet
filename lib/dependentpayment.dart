@@ -16,6 +16,7 @@ class DependentPaymentPage extends StatefulWidget {
 class _DependentPaymentPageState extends State<DependentPaymentPage> {
   String merchantId = '';
   late MobileScannerController _cameraController;
+  bool _isProcessing = false; // Add this flag
 
   @override
   void initState() {
@@ -30,6 +31,14 @@ class _DependentPaymentPageState extends State<DependentPaymentPage> {
   }
 
   void _handleQRScan(String qrResult) async {
+    if (_isProcessing) return; // Return if already processing
+    setState(() {
+      _isProcessing = true; // Set the flag to true to indicate processing
+    });
+
+    // Dispose the camera to prevent further scans
+    _cameraController.dispose();
+
     print("QR Result: $qrResult");
     try {
       final token = await SecureSessionManager.getToken();
@@ -67,6 +76,10 @@ class _DependentPaymentPageState extends State<DependentPaymentPage> {
     } catch (e) {
       print("Error occurred while sending request: $e");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error occurred while sending request: $e')));
+    } finally {
+      setState(() {
+        _isProcessing = false; // Reset the flag after processing
+      });
     }
   }
 
@@ -83,7 +96,7 @@ class _DependentPaymentPageState extends State<DependentPaymentPage> {
             onDetect: (capture) {
               final Barcode? barcode = capture.barcodes.firstOrNull;
               final String? code = barcode?.rawValue;
-              if (code != null) {
+              if (code != null && !_isProcessing) {
                 _handleQRScan(code);
               }
             },
@@ -111,18 +124,6 @@ class _DependentPaymentPageState extends State<DependentPaymentPage> {
               ),
             ),
           ),
-          // Align(
-          //   alignment: Alignment.bottomCenter,
-          //   child: Container(
-          //     margin: const EdgeInsets.only(bottom: 20),
-          //     child: ElevatedButton(
-          //       onPressed: () {
-          //         // You can add additional functionality here (e.g., a button to manually enter the code)
-          //       },
-          //       child: const Text('Enter Code Manually'),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );

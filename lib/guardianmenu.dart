@@ -12,6 +12,7 @@ import 'transferfunddependent.dart';
 import 'topupwallet.dart';
 import 'constants.dart';
 import 'bottomappbar.dart';
+import 'dependentanalytic.dart'; // Import the new page
 
 class GuardianMenuPage extends StatefulWidget {
   final int currentIndex;
@@ -208,9 +209,9 @@ class _GuardianMenuPageState extends State<GuardianMenuPage> {
                 builder: (context) => const CreateDependentPage(),
               ));
             }),
-            _quickMenuButton(Icons.history, 'History', () {
+            _quickMenuButton(Icons.analytics, 'Analytics', () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const TransactionHistoryPage(),
+                builder: (context) => const DependentAnalyticPage(),
               ));
             }),
           ],

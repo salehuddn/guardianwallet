@@ -17,6 +17,7 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
   dynamic selectedDependent;
   bool isLoading = true;
 
+
   @override
   void initState() {
     super.initState();
@@ -158,7 +159,7 @@ class _ManageDependentPageState extends State<ManageDependentPage> {
           ],
         ),
       ),
-      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 3),
+      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 2),
     );
   }
 
