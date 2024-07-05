@@ -4,51 +4,31 @@ import 'dart:convert';
 import 'package:fl_chart/fl_chart.dart';
 import 'tokenmanager.dart';
 import 'constants.dart';
-import 'bottomappbar.dart';
+import 'dependentprofile.dart';
+import 'dependentpayment.dart';
+import 'dependentmenu.dart';
 
-class DependentAnalyticPage extends StatefulWidget {
-  const DependentAnalyticPage({super.key});
+class AnalyticDependentPage extends StatefulWidget {
+  const AnalyticDependentPage({super.key});
 
   @override
-  _DependentAnalyticPageState createState() => _DependentAnalyticPageState();
+  _AnalyticDependentPageState createState() => _AnalyticDependentPageState();
 }
 
-class _DependentAnalyticPageState extends State<DependentAnalyticPage> {
-  List<dynamic> dependents = [];
-  dynamic selectedDependent;
+class _AnalyticDependentPageState extends State<AnalyticDependentPage> {
   bool isLoading = true;
   dynamic analyticData;
 
   @override
   void initState() {
     super.initState();
-    _fetchDependents();
+    _fetchAnalyticData();
   }
 
-  Future<void> _fetchDependents() async {
+  Future<void> _fetchAnalyticData() async {
     final token = await SecureSessionManager.getToken();
-    final response = await http.get(
-      Uri.parse('$BASE_API_URL/secured/guardian/dependants'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        dependents = data['dependant'];
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to load dependents')),
-      );
-    }
-  }
+    final dependentId = await _fetchDependentId(token!);
 
-  Future<void> _fetchAnalyticData(int dependentId) async {
-    final token = await SecureSessionManager.getToken();
     final response = await http.get(
       Uri.parse('$BASE_API_URL/secured/analytic/budget/$dependentId'),
       headers: {'Authorization': 'Bearer $token'},
@@ -57,12 +37,69 @@ class _DependentAnalyticPageState extends State<DependentAnalyticPage> {
       final data = json.decode(response.body);
       setState(() {
         analyticData = data['data'];
+        isLoading = false;
       });
     } else {
+      setState(() {
+        isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to load analytic data')),
       );
     }
+  }
+
+  Future<int> _fetchDependentId(String token) async {
+    final response = await http.get(
+      Uri.parse('$BASE_API_URL/secured/dependant/profile'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data['user']['id']; // Assuming 'id' is the dependent ID
+    } else {
+      throw Exception('Failed to load dependent ID');
+    }
+  }
+
+  void _selectPage(int index) {
+    switch (index) {
+      case 0:
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => DependentMenuPage(currentIndex: index)));
+        break;
+      case 1:
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DependentProfilePage()));
+        break;
+      case 3:
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DependentPaymentPage()));
+        break;
+    }
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return BottomAppBar(
+      shape: const CircularNotchedRectangle(),
+      notchMargin: 6.0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          _buildIconButton(Icons.home, 0),
+          const Spacer(),
+          _buildIconButton(Icons.qr_code_scanner, 3, isFloating: true),
+          const Spacer(),
+          _buildIconButton(Icons.account_circle, 1),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIconButton(IconData icon, int index, {bool isFloating = false}) {
+    return IconButton(
+      icon: Icon(icon),
+      iconSize: isFloating ? 30.0 : 24.0,
+      onPressed: () => _selectPage(index),
+    );
   }
 
   @override
@@ -75,34 +112,11 @@ class _DependentAnalyticPageState extends State<DependentAnalyticPage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        child: Column(
-          children: [
-            DropdownButton<dynamic>(
-              value: selectedDependent,
-              items: dependents.map<DropdownMenuItem<dynamic>>((dep) {
-                return DropdownMenuItem<dynamic>(
-                  value: dep,
-                  child: Text(dep['name']),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  selectedDependent = newValue;
-                  analyticData = null;
-                });
-                _fetchAnalyticData(selectedDependent['id']);
-              },
-              hint: const Text('Select a dependent'),
-            ),
-            selectedDependent != null
-                ? analyticData != null
-                ? _buildAnalyticDetails()
-                : const Center(child: CircularProgressIndicator())
-                : Container(),
-          ],
-        ),
+        child: analyticData != null
+            ? _buildAnalyticDetails()
+            : const Center(child: Text('No data available')),
       ),
-      bottomNavigationBar: const CustomBottomAppBar(currentIndex: 3),
+      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 

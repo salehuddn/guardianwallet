@@ -10,6 +10,7 @@ import 'tokenmanager.dart';
 import 'transactionhistory.dart';
 import 'constants.dart';
 import 'dependenttabung.dart'; // Make sure this import is correct
+import 'analyticdependent.dart'; // Make sure this import is correct
 
 class DependentMenuPage extends StatefulWidget {
   final int currentIndex;
@@ -205,19 +206,19 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            _quickMenuButton(Icons.payment, 'Pay', () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const DependentPaymentPage(),
-              ));
-            }),
             _quickMenuButton(Icons.history, 'Expenses', () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const DependentHistoryPage(),
               ));
             }),
-            _quickMenuButton(Icons.savings, 'Tabung', () {
+            _quickMenuButton(Icons.account_balance_wallet, 'Tabung', () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const DependentTabungPage(),
+              ));
+            }),
+            _quickMenuButton(Icons.analytics, 'Analytics', () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const AnalyticDependentPage(),
               ));
             }),
           ],
