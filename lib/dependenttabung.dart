@@ -68,7 +68,7 @@ class _DependentTabungPageState extends State<DependentTabungPage> {
 
   Future<void> _updateSavingFund(int id, String name, String goalAmount) async {
     final token = await SecureSessionManager.getToken();
-    final response = await http.put(
+    final response = await http.post(
       Uri.parse('$BASE_API_URL/secured/dependant/savings/update/$id'),
       headers: {
         'Authorization': 'Bearer $token',
@@ -123,6 +123,29 @@ class _DependentTabungPageState extends State<DependentTabungPage> {
       Navigator.of(context).pop();
     } else {
       print('Error transferring funds: ${response.body}');
+    }
+  }
+
+  Future<void> _withdrawFromSavingFund(int savingsId, String amount) async {
+    final token = await SecureSessionManager.getToken();
+    final response = await http.post(
+      Uri.parse('$BASE_API_URL/secured/dependant/savings/withdraw'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'savings_id': savingsId,
+        'amount': amount,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      _fetchSavings();
+      Navigator.of(context).pop();
+      _showMessageDialog('Fund withdrawn successfully');
+    } else {
+      print('Error withdrawing funds: ${response.body}');
     }
   }
 
@@ -259,6 +282,45 @@ class _DependentTabungPageState extends State<DependentTabungPage> {
     );
   }
 
+  void _showWithdrawDialog(int id) {
+    String amount = '';
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Withdraw Fund'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextField(
+                decoration: const InputDecoration(labelText: 'Amount'),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  amount = value;
+                },
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Withdraw'),
+              onPressed: () {
+                _withdrawFromSavingFund(id, amount);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showDeleteConfirmationDialog(int id) {
     showDialog(
       context: context,
@@ -277,6 +339,26 @@ class _DependentTabungPageState extends State<DependentTabungPage> {
               child: const Text('Delete'),
               onPressed: () {
                 _deleteSavingFund(id);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showMessageDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Success'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
@@ -361,26 +443,46 @@ class _DependentTabungPageState extends State<DependentTabungPage> {
                         Text('Remaining: RM${saving['remaining']}'),
                       ],
                     ),
-                    trailing: Row(
+                    trailing: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () {
-                            _showTopupDialog(saving['id']);
-                          },
+                        Flexible(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: () {
+                                  _showTopupDialog(saving['id']);
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () {
+                                  _showEditTabungDialog(saving['id'], saving['name'], saving['goal_amount']);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            _showEditTabungDialog(saving['id'], saving['name'], saving['goal_amount']);
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            _showDeleteConfirmationDialog(saving['id']);
-                          },
+                        Flexible(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              IconButton(
+                                icon: const Icon(Icons.remove),
+                                onPressed: () {
+                                  _showWithdrawDialog(saving['id']);
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  _showDeleteConfirmationDialog(saving['id']);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

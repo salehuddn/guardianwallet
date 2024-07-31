@@ -211,7 +211,7 @@ class _DependentMenuPageState extends State<DependentMenuPage> {
                 builder: (context) => const DependentHistoryPage(),
               ));
             }),
-            _quickMenuButton(Icons.account_balance_wallet, 'Tabung', () {
+            _quickMenuButton(Icons.account_balance_wallet, 'Savings', () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const DependentTabungPage(),
               ));
